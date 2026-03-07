@@ -9,4 +9,12 @@ Run server
 `python3 app.py`
 
 Close server
+ctrl + C
+
+Exit virtual environment
 `deactivate`
+
+Notes
+I used `"INSERT INTO tasks (task) VALUES (?)", (task,)` to prevent SQL injection to build a secure app
+
+I used `task = request.form.get("task")` instead of `task = request.form["task"]` to handle empty submissions

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello Flask</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f4f4f4;
+        }
+
+        .container {
+            background: white;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+        }
+
+        input, button {
+            padding: 8px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 6px 0;
+        }
+
+        .remove-underline {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>To Do App</h1>
+
+    <form method="POST">
+        <input type="text" name="task" placeholder="Add a task" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <h3>Task</h3>
+
+    <ul>
+        {% for task in tasks %}
+            <li>{{ t[1] }}
+                <a class="remove-underline" href="/complete/ {{ task[0] }}">✔</a>
+                <a class="remove-underline" href="/delete/{{ task[0] }}">✖</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>
