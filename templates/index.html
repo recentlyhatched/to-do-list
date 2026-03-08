@@ -45,8 +45,14 @@
 
     <ul>
         {% for task in tasks %}
-            <li>{{ t[1] }}
-                <a class="remove-underline" href="/complete/ {{ task[0] }}">✔</a>
+            <li>
+                {% if task[2] == 1 %}
+                    <s>{{ task[1] }}</s>
+                {% else %}
+                    {{ task[1] }}
+                {% endif %}
+                <a class="remove-underline" href="/complete/{{ task[0] }}">✔</a>
+                <a class="remove-underline" href="/edit/{{ task[0] }}">✏</a>
                 <a class="remove-underline" href="/delete/{{ task[0] }}">✖</a>
             </li>
         {% endfor %}

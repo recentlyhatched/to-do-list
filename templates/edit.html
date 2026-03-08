@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Task</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f4f4f4;
+        }
+
+        .container {
+            background: white;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+        }
+
+        input, button {
+            padding: 8px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 6px 0;
+        }
+
+        .remove-underline {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Task</h1>
+    <form method="POST">
+        <input type="text" name="task" value="{{ task_text }}" required>
+        <button type="submit">Save</button>
+        <a href="/">Cancel</a>
+    </form>
+</body>
+</html>

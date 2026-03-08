@@ -84,6 +84,29 @@ def complete(id):
     return redirect("/")
 
 
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit(id):
+    conn = sqlite3.connect(DB)
+    cursor = conn.cursor()
+    
+    if request.method == "POST":
+        new_task = request.form.get("task")
+        if new_task and new_task.strip():
+            cursor.execute("UPDATE tasks SET task=? WHERE id=?", (new_task, id))
+            conn.commit()
+        conn.close()
+        return redirect("/")
+    
+    # GET request - show current task in a form
+    cursor.execute("SELECT task FROM tasks WHERE id=?", (id,))
+    task = cursor.fetchone()
+    conn.close()
+    if task:
+        return render_template("edit.html", task_id=id, task_text=task[0])
+    else:
+        return redirect("/")
+
+
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
