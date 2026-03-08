@@ -17,7 +17,7 @@
             max-width: 500px;
         }
 
-        input, button {
+        input, button, select {
             padding: 8px;
             margin-top: 10px;
         }
@@ -33,31 +33,51 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>To Do App</h1>
+    <div class="container">
+        <h1>To Do App</h1>
 
-    <form method="POST">
-        <input type="text" name="task" placeholder="Add a task" required>
-        <button type="submit">Add</button>
-    </form>
+        <form method="POST">
+            <input type="text" name="task" placeholder="Add a task" required>
+            
+            <input type="date" name="deadline">
 
-    <h3>Task</h3>
+            <select name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
 
-    <ul>
-        {% for task in tasks %}
-            <li>
-                {% if task[2] == 1 %}
-                    <s>{{ task[1] }}</s>
-                {% else %}
-                    {{ task[1] }}
-                {% endif %}
-                <a class="remove-underline" href="/complete/{{ task[0] }}">✔</a>
-                <a class="remove-underline" href="/edit/{{ task[0] }}">✏</a>
-                <a class="remove-underline" href="/delete/{{ task[0] }}">✖</a>
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+            <button type="submit">Add</button>
+        </form>
+
+        <h3>Filter</h3>
+
+        <a href="/">All</a>
+        <a href="/?priority=High">High</a>
+        <a href="/?priority=Medium"> Medium</a>
+        <a href="/?priority=Low">Low</a>
+
+        <h3>Task</h3>
+
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    {% if task[2] == 1 %}
+                        <s>{{ task[1] }}</s>
+                    {% else %}
+                        {{ task[1] }}
+                    {% endif %}
+
+                    | Due: {{ task[3] if task[3] else "No deadline" }}
+                    | Priority: {{ task[4] }}
+                    
+                    <a class="remove-underline" href="/complete/{{ task[0] }}">✔</a>
+                    <a class="remove-underline" href="/edit/{{ task[0] }}">✏</a>
+                    <a class="remove-underline" href="/delete/{{ task[0] }}">✖</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
 </body>
 </html>

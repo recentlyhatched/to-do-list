@@ -13,7 +13,9 @@ def init_db():
     CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         task TEXT NOT NULL,
-        completed INTEGER DEFAULT 0
+        completed INTEGER DEFAULT 0,
+        deadline TEXT,
+        priority TEXT
     )
     """)
 
@@ -32,11 +34,11 @@ def get_task():
     return rows
 
 
-def add_task(task):
+def add_task(task, deadline, priority):
     conn = sqlite3.connect(DB)
     cursor = conn.cursor()
 
-    cursor.execute("INSERT INTO tasks (task) VALUES (?)", (task,))
+    cursor.execute("INSERT INTO tasks (task, deadline, priority) VALUES (?, ?, ?)", (task, deadline, priority))
     conn.commit()
 
     conn.close()
@@ -44,16 +46,31 @@ def add_task(task):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    conn = sqlite3.connect(DB)
+    cursor = conn.cursor()
+
     if request.method == "POST":
         task = request.form.get("task")
+        deadline = request.form.get("deadline")
+        priority = request.form.get("priority")
 
         #makes sure task is not empty
         if task and task.strip():
-            add_task(task)
+            add_task(task, deadline, priority)
         
         return redirect("/")
 
-    tasks = get_task()
+    # filtering
+    priority_filter = request.args.get("priority")
+
+    if priority_filter:
+        cursor.execute("SELECT * FROM tasks WHERE priority=?", (priority_filter,))
+    else:
+        cursor.execute("SELECT * FROM tasks")
+
+    tasks = cursor.fetchall()
+    conn.close
+
     return render_template("index.html", tasks=tasks)
 
 
@@ -90,19 +107,33 @@ def edit(id):
     cursor = conn.cursor()
     
     if request.method == "POST":
+        # get task, deadline and priority inputs
         new_task = request.form.get("task")
+        new_deadline = request.form.get("deadline")
+        new_priority = request.form.get("priority")
+
         if new_task and new_task.strip():
-            cursor.execute("UPDATE tasks SET task=? WHERE id=?", (new_task, id))
+            cursor.execute("""
+                           UPDATE tasks
+                           SET task=?, deadline=?, priority=?
+                           WHERE id=?
+                           """, (new_task, new_deadline, new_priority, id))
             conn.commit()
         conn.close()
         return redirect("/")
     
     # GET request - show current task in a form
-    cursor.execute("SELECT task FROM tasks WHERE id=?", (id,))
+    cursor.execute("SELECT task, deadline, priority FROM tasks WHERE id=?", (id,))
     task = cursor.fetchone()
     conn.close()
     if task:
-        return render_template("edit.html", task_id=id, task_text=task[0])
+        return render_template(
+            "edit.html",
+            task_id=id,
+            task_text=task[0],
+            deadline=task[1],
+            priority=task[2]
+            )
     else:
         return redirect("/")
 

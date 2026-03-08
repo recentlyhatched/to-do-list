@@ -17,7 +17,7 @@
             max-width: 500px;
         }
 
-        input, button {
+        input, button, select {
             padding: 8px;
             margin-top: 10px;
         }
@@ -32,11 +32,31 @@
     </style>
 </head>
 <body>
-    <h1>Edit Task</h1>
-    <form method="POST">
-        <input type="text" name="task" value="{{ task_text }}" required>
-        <button type="submit">Save</button>
-        <a href="/">Cancel</a>
-    </form>
+    <div class="container">
+        <h1>Edit Task</h1>
+        <form method="POST">
+            <label>Task</label>
+            <input type="text" name="task" value="{{ task_text }}" required>
+
+            <br>
+
+            <label>Deadline</label>
+            <input type="date" name="deadline" value="{{ deadline }}">
+
+            <br>
+
+            <label>Priority</label>
+            <select name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+
+            <br>
+
+            <button type="submit">Save</button>
+            <a href="/">Cancel</a>
+        </form>
+    </div>
 </body>
 </html>
