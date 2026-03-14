@@ -23,19 +23,21 @@ def init_db():
     conn.close()
 
 
-def get_task():
-    conn = sqlite3.connect(DB)
+def get_db():
+    return sqlite3.connect(DB)
+
+# helper function
+def query_db(query, args=(), one=False): # default is empty tuple and one result = false
+    conn = get_db()
+    conn.row_factory = sqlite3.Row # returns dictionary-like collection instead of tuples
     cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM tasks")
+    cursor.execute(query, args)
     rows = cursor.fetchall()
-
     conn.close()
-    return rows
-
+    return (rows[0] if rows else None) if one else rows # ternary operator
 
 def add_task(task, deadline, priority):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("INSERT INTO tasks (task, deadline, priority) VALUES (?, ?, ?)", (task, deadline, priority))
@@ -46,8 +48,6 @@ def add_task(task, deadline, priority):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    conn = sqlite3.connect(DB)
-    cursor = conn.cursor()
 
     if request.method == "POST":
         task = request.form.get("task")
@@ -64,19 +64,16 @@ def index():
     priority_filter = request.args.get("priority")
 
     if priority_filter:
-        cursor.execute("SELECT * FROM tasks WHERE priority=?", (priority_filter,))
+        tasks = query_db("SELECT * FROM tasks WHERE priority=?", (priority_filter,))
     else:
-        cursor.execute("SELECT * FROM tasks")
-
-    tasks = cursor.fetchall()
-    conn.close
+        tasks = query_db("SELECT * FROM tasks")
 
     return render_template("index.html", tasks=tasks)
 
 
-@app.route("/delete/<int:id>") # convert to integer
+@app.route("/delete/<int:id>", methods=["POST"]) # convert to integer
 def delete(id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM tasks WHERE id=?", (id,))
     conn.commit()
@@ -86,7 +83,7 @@ def delete(id):
 
 @app.route("/complete/<int:id>")
 def complete(id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     cursor = conn.cursor()
     
     # toggle the completed status
@@ -103,7 +100,7 @@ def complete(id):
 
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit(id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     cursor = conn.cursor()
     
     if request.method == "POST":

@@ -63,13 +63,15 @@
             {% for task in tasks %}
                 <li>
                     {% if task[2] == 1 %}
-                        <s>{{ task[1] }}</s>
+                        <s>{{ task[1] }}
+                            | Due: {{ task[3] if task[3] else "No deadline" }}
+                            | Priority: {{ task[4] }}
+                        </s>
                     {% else %}
                         {{ task[1] }}
+                        | Due: {{ task[3] if task[3] else "No deadline" }}
+                        | Priority: {{ task[4] }}
                     {% endif %}
-
-                    | Due: {{ task[3] if task[3] else "No deadline" }}
-                    | Priority: {{ task[4] }}
                     
                     <a class="remove-underline" href="/complete/{{ task[0] }}">✔</a>
                     <a class="remove-underline" href="/edit/{{ task[0] }}">✏</a>
