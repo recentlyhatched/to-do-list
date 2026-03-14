@@ -33,6 +33,7 @@ def query_db(query, args=(), one=False): # default is empty tuple and one result
     cursor = conn.cursor()
     cursor.execute(query, args)
     rows = cursor.fetchall()
+    conn.commit()
     conn.close()
     return (rows[0] if rows else None) if one else rows # ternary operator
 
@@ -71,13 +72,13 @@ def index():
     return render_template("index.html", tasks=tasks)
 
 
-@app.route("/delete/<int:id>", methods=["POST"]) # convert to integer
+@app.route("/delete/<int:id>") # convert to integer
 def delete(id):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM tasks WHERE id=?", (id,))
-    conn.commit()
-    conn.close()
+    # conn = get_db()
+    # cursor = conn.cursor()
+    query_db("DELETE FROM tasks WHERE id=?", (id,))
+    # conn.commit()
+    # conn.close()
     return redirect("/")
 
 
