@@ -5,6 +5,7 @@ app = Flask(__name__)
 DB = "database.db"
 
 
+
 def init_db():
     conn = sqlite3.connect(DB)
     cursor = conn.cursor()
@@ -22,6 +23,7 @@ def init_db():
     conn.commit()
     conn.close()
 
+init_db()
 
 def get_db():
     return sqlite3.connect(DB)
@@ -80,8 +82,6 @@ def delete(id):
 
 @app.route("/complete/<int:id>")
 def complete(id):
-    conn = get_db()
-    cursor = conn.cursor()
     
     # toggle the completed status
     query_db("""
@@ -89,9 +89,7 @@ def complete(id):
         SET completed = CASE WHEN completed=0 THEN 1 ELSE 0 END
         WHERE id=?
     """, (id,))
-    
-    conn.commit()
-    conn.close()
+
     return redirect("/")
 
 
@@ -128,5 +126,4 @@ def edit(id):
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)
