@@ -74,11 +74,7 @@ def index():
 
 @app.route("/delete/<int:id>") # convert to integer
 def delete(id):
-    # conn = get_db()
-    # cursor = conn.cursor()
     query_db("DELETE FROM tasks WHERE id=?", (id,))
-    # conn.commit()
-    # conn.close()
     return redirect("/")
 
 
@@ -88,7 +84,7 @@ def complete(id):
     cursor = conn.cursor()
     
     # toggle the completed status
-    cursor.execute("""
+    query_db("""
         UPDATE tasks
         SET completed = CASE WHEN completed=0 THEN 1 ELSE 0 END
         WHERE id=?
@@ -101,8 +97,6 @@ def complete(id):
 
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit(id):
-    conn = get_db()
-    cursor = conn.cursor()
     
     if request.method == "POST":
         # get task, deadline and priority inputs
@@ -111,19 +105,16 @@ def edit(id):
         new_priority = request.form.get("priority")
 
         if new_task and new_task.strip():
-            cursor.execute("""
+            query_db("""
                            UPDATE tasks
                            SET task=?, deadline=?, priority=?
                            WHERE id=?
                            """, (new_task, new_deadline, new_priority, id))
-            conn.commit()
-        conn.close()
         return redirect("/")
     
     # GET request - show current task in a form
-    cursor.execute("SELECT task, deadline, priority FROM tasks WHERE id=?", (id,))
-    task = cursor.fetchone()
-    conn.close()
+    task = query_db("SELECT task, deadline, priority FROM tasks WHERE id=?", (id,), one=True)
+    
     if task:
         return render_template(
             "edit.html",
