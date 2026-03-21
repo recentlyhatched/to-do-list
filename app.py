@@ -26,7 +26,7 @@ def init_db():
 init_db()
 
 def get_db():
-    return sqlite3.connect(DB, timeout=5) # wait for connection to database
+    return sqlite3.connect(DB)
 
 # helper function
 def query_db(query, args=(), one=False): # default is empty tuple and one result = false
