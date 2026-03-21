@@ -23,12 +23,10 @@ def init_db():
     conn.commit()
     conn.close()
 
-@app.before_first_request
-def setup():
-    init_db()
+init_db()
 
 def get_db():
-    return sqlite3.connect(DB)
+    return sqlite3.connect(DB, timeout=5) # wait for connection to database
 
 # helper function
 def query_db(query, args=(), one=False): # default is empty tuple and one result = false
