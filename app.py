@@ -23,10 +23,12 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()
+@app.before_first_request
+def setup():
+    init_db()
 
 def get_db():
-    return sqlite3.connect(DB)
+    return sqlite3.connect(DB, timeout=5) # wait for connection to database
 
 # helper function
 def query_db(query, args=(), one=False): # default is empty tuple and one result = false
@@ -124,6 +126,6 @@ def edit(id):
     else:
         return redirect("/")
 
-
+# only runs locally
 if __name__ == "__main__":
     app.run(debug=True)
